@@ -46,7 +46,7 @@ for (i in 1:n){
   colnames(new_coords) <- paste("V", 1:ncol(new_coords), sep = "")
 
 
-  out1[[i]] <- composits:: mv_tsout_ens(new_coords,
+  out1[[i]] <- composits::mv_tsout_ens(new_coords,
                                         m1 = NULL,
                                         ncomp = 2,
                                         sds = 1,
