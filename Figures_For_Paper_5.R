@@ -4,15 +4,7 @@
 library(tidyverse)
 library(composits)
 library(pROC)
-#setwd("C:/Users/Sevvandi/Documents/repos/SharpsFlats")    #Sevvandi
-setwd("C:/Users/rloa0001/Dropbox/SharpsFlats")    #Ruben
 
-
-source("R/Simulation_function.R")
-
-Rfunctions = list.files("R")
-Rfunctions1 = paste("R/", Rfunctions, sep="")
-sapply(Rfunctions1, source)
 
 start_time <- Sys.time()
 n       = 1000
@@ -26,12 +18,12 @@ for (i in 1:n){
   N <- 30
   K <- 2
   TT <- 500
-  A <- matrix(rnorm(N*K, 0, 0.3),N,K)
-  B <- matrix(c(0.8,0,0,0.5),K,K)
-  C <- matrix(c(5,0,0,4),K,K)
+  A <- matrix(rnorm(N*K, 0, 0.3), N, K)
+  B <- matrix(c(0.8,0,0,0.5), K, K)
+  C <- matrix(c(5,0,0,4), K, K)
   mu <- c(0.3, 0.7)
-  D <- matrix(c(0.4,0,0,0.4),K,K)
-  outliers_discre <- matrix(c(117, 2, 10, 40, 8, 200),2,3,byrow =T)
+  D <- matrix(c(0.4,0,0,0.4), K,K)
+  outliers_discre <- matrix(c(117, 2, 10, 40, 8, 200), 2, 3, byrow = TRUE)
 
   simobj =  Simulations(N = N,
                      TT = TT,
@@ -46,30 +38,30 @@ for (i in 1:n){
 
   sim <- simobj$datasim
   out2[[i]] <- simobj$outliers_timeloc
-  outliers_true = matrix(0,dim(sim)[1],1)
+  outliers_true = matrix(0,dim(sim)[1], 1)
   outliers_true[simobj$outliers_timeloc] = 1
 
   new_coords_out <- get_coords((sim))  # Check transpose
   new_coords <- new_coords_out$y
-  colnames(new_coords) <- paste("V", 1:ncol(new_coords), sep="")
+  colnames(new_coords) <- paste("V", 1:ncol(new_coords), sep = "")
 
 
   out1[[i]] <- composits:: mv_tsout_ens(new_coords,
                                         m1 = NULL,
-                                        ncomp=2,
-                                        sds=1,
-                                        rept=1,
-                                        compr=1,
-                                        rat=0.05,
-                                        fast=FALSE)
+                                        ncomp = 2,
+                                        sds = 1,
+                                        rept = 1,
+                                        compr = 1,
+                                        rat = 0.05,
+                                        fast = FALSE)
 
-  outliers_ensemble <- matrix(0,dim(sim)[1],1)
+  outliers_ensemble <- matrix(0,dim(sim)[1], 1)
   nout <- dim(out1[[i]]$all)[1]
 
   for (j in nout:2){
-       if (out1[[i]]$all[j,'Indices']!=(out1[[i]]$all[j-1,'Indices']+1) ||
-           out1[[i]]$all[j,'Total_Score']>(out1[[i]]$all[j-1,'Total_Score'])){
-         outliers_ensemble[out1[[i]]$all[j,'Indices']] = 1
+       if (out1[[i]]$all[j,'Indices'] != (out1[[i]]$all[j-1,'Indices'] + 1) ||
+           out1[[i]]$all[j,'Total_Score'] > (out1[[i]]$all[j-1,'Total_Score'])){
+         outliers_ensemble[out1[[i]]$all[j, 'Indices']] = 1
        }
   }
 
@@ -84,8 +76,9 @@ end_time <- Sys.time()
 
 ROC = tibble(auc = rocval)
 
-ggplot(data=ROC, aes(x=auc)) +
-  geom_histogram(breaks=seq(0.7, 1, by=0.01)) + theme_bw()+
+ggplot(data = ROC, aes(x = auc)) +
+  geom_histogram(breaks = seq(0.7, 1, by = 0.01)) + 
+  theme_bw() +
   labs(title="Histogram for AUC", x="AUC", y="Count")
 
 
