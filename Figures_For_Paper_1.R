@@ -1,8 +1,8 @@
 library(tidyverse)
+library(composits)
 
-# CHANGE DIRECTORY.
-setwd("C:/Users/rloa0001/Dropbox/SharpsFlats")
-source("R/Simulation_function.R")
+
+# Setting paramters for simulation
 
 set.seed(2000)
 N <- 30
@@ -15,6 +15,9 @@ mu <- c(0.3, 0.7)
 D <- matrix(c(0.4,0,0,0.4),K,K)
 outliers_discre <- matrix(c(117, 2, 10, 40, 8, 200),2,3,byrow =T)
 
+
+# Running simulation using composits R package
+
 simobj =  Simulations(N = N,
                       TT = TT,
                       K = K,
@@ -25,12 +28,12 @@ simobj =  Simulations(N = N,
                       D = D,
                       outliers_discre = outliers_discre,
                       q = 0.005)
-test = simobj$datasim%>%
+simulation_data = simobj$datasim%>%
         as_tibble()
 names(test) <- paste0("V", c(1:N), sep = "")
 
 
-test %>%
+simulation_data %>%
   gather(Group, y)     %>%
   group_by(Group)     %>%
   mutate(x = 1:n())   %>%
